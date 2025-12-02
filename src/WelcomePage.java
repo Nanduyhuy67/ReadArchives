@@ -1,46 +1,56 @@
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Color;
+import javax.swing.BorderFactory;
 
 public class WelcomePage extends JFrame {
-    private JTextField textField1;
-    private JTextField textField2;
+    public JPanel mainPanel;
+    public JLabel ReadArchives;
+    private JTextField loginField;
     private JButton registerButton;
     private JButton loginButton;
+    private JPasswordField passwordField1;
 
-    private RegisterPage registerPage;
-    private DashboardPage dashboardPage;
+    private void applyHeaderBorder() {
+        ReadArchives.setOpaque(true);            // WAJIB
+        ReadArchives.setBackground(Color.WHITE); // biar kontras
+
+        ReadArchives.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(153, 0, 0), 2),
+                        BorderFactory.createEmptyBorder(6, 14, 6, 14)
+                )
+        );
+
+        ReadArchives.revalidate();
+        ReadArchives.repaint();
+    }
 
     public WelcomePage() {
-        initComponents();
+//        ReadArchives.setOpaque(true);
+//        ReadArchives.setBackground(Color.WHITE);
+//        ReadArchives.setBorder(
+//                BorderFactory.createCompoundBorder(
+//                        BorderFactory.createLineBorder(new Color(153, 0, 0), 2),
+//                        BorderFactory.createEmptyBorder(8, 16, 8, 16)
+//                )
+//        );
 
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-                if (registerPage == null) {
-                    registerPage = new RegisterPage(); // Pass reference to MainGUI
-                }
-                registerPage.setVisible(true);
+                MainControl.showRegister();
             }
         });
 
-//        loginButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                setVisible(false);
-//                if (dashboardPage == null) {
-//                    dashboardPage = new DashboardPage(); // Pass reference to MainGUI
-//                }
-//                dashboardPage.setVisible(true);
-//            }
-//        });
-
-        setVisible(true);
-    }
-
-    public static void main(String[] args){
-        new WelcomePage();
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MainControl.showDashboard();
+            }
+        });
     }
 }
+
+
