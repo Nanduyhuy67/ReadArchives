@@ -1,8 +1,6 @@
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class WelcomePage {
     public JPanel mainPanel;
@@ -43,6 +41,9 @@ public class WelcomePage {
         Border fullWidthBorder = BorderFactory.createMatteBorder(0, 0, 4, 0, primaryColor);
         headerPanel.setBorder(fullWidthBorder);
 
+        // Tambahkan padding kiri untuk label agar tidak terlalu mentok
+        ReadArchives.setBorder(BorderFactory.createEmptyBorder(0,20,0,0));
+
         // Tambahkan label ke header panel
         headerPanel.add(ReadArchives, BorderLayout.CENTER);
 
@@ -63,7 +64,7 @@ public class WelcomePage {
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         formPanel.setOpaque(false);
-        formPanel.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         formPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel loginSection = new JPanel();
@@ -77,7 +78,7 @@ public class WelcomePage {
         loginSection.add(Box.createRigidArea(new Dimension(0, 5))); // Spacing kecil
 
         loginField = new JTextField();
-        loginField.setMaximumSize(new Dimension(300, 35));
+        loginField.setMaximumSize(new Dimension(400, 35));
         loginField.setAlignmentX(Component.LEFT_ALIGNMENT);
         loginSection.add(loginField);
         loginSection.add(Box.createRigidArea(new Dimension(0, 15))); // Spacing antara field
@@ -93,7 +94,7 @@ public class WelcomePage {
         passwordSection.add(Box.createRigidArea(new Dimension(0, 5))); // Spacing kecil
 
         passwordField1 = new JPasswordField();
-        passwordField1.setMaximumSize(new Dimension(300, 35));
+        passwordField1.setMaximumSize(new Dimension(400, 35));
         passwordField1.setAlignmentX(Component.LEFT_ALIGNMENT);
         passwordSection.add(passwordField1);
 
@@ -147,11 +148,15 @@ public class WelcomePage {
         if (ReadArchives != null) {
             ReadArchives.setFont(new Font("Arial", Font.BOLD, 36));
             ReadArchives.setForeground(secondaryColor);
+
+            if (ReadArchives.getBorder() == null) {
+                ReadArchives.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+            }
         }
 
         // ========== WELCOME MESSAGE ==========
         if (WelcomeToReadArchives != null) {
-            WelcomeToReadArchives.setFont(new Font("Arial", Font.PLAIN, 18));
+            WelcomeToReadArchives.setFont(new Font("Arial", Font.PLAIN, 25));
             WelcomeToReadArchives.setForeground(Color.BLACK);
         }
 
@@ -170,23 +175,32 @@ public class WelcomePage {
         if (loginField != null) {
             loginField.setBackground(secondaryColor);
             Border loginFieldBorder = BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(secondaryColor, 2),
-                    BorderFactory.createEmptyBorder(12, 50, 12, 50)
+                    BorderFactory.createLineBorder(secondaryColor, 1),
+                    BorderFactory.createEmptyBorder(8, 12, 8, 12)
             );
             loginField.setBorder(loginFieldBorder);
-//            loginField.setFocusPainted(false);
             loginField.setFont(new Font("Arial", Font.PLAIN, 14));
+            loginField.putClientProperty("JTextField.placeholderText", "Enter your username");
+
+            // Set margin untuk teks agar tidak terlalu ke pinggir
+            loginField.setMargin(new Insets(0, 5, 0, 5));
         }
 
         if (passwordField1 != null) {
             passwordField1.setBackground(secondaryColor);
             Border passwordFieldBorder = BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(secondaryColor, 2),
-                    BorderFactory.createEmptyBorder(12, 50, 12, 50)
+                    BorderFactory.createLineBorder(secondaryColor, 1),
+                    BorderFactory.createEmptyBorder(8, 12, 8, 12)
             );
             passwordField1.setBorder(passwordFieldBorder);
-//            passwordField1.setFocusPainted(false);
             passwordField1.setFont(new Font("Arial", Font.PLAIN, 14));
+            passwordField1.putClientProperty("JPasswordField.placeholderText", "Enter your password");
+
+            // Set margin untuk teks agar tidak terlalu ke pinggir
+            passwordField1.setMargin(new Insets(0, 5, 0, 5));
+
+            // Set echo char untuk password
+            passwordField1.setEchoChar('•');
         }
 
         // ========== BUTTONS ==========
@@ -196,7 +210,7 @@ public class WelcomePage {
             registerButton.setFont(new Font("Arial", Font.BOLD, 14));
             Border registerBorder = BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(primaryColor, 1),
-                    BorderFactory.createEmptyBorder(12, 40, 12, 40)
+                    BorderFactory.createEmptyBorder(10, 30, 10, 30)
             );
             registerButton.setBorder(registerBorder);
             registerButton.setFocusPainted(false);
@@ -208,7 +222,7 @@ public class WelcomePage {
             loginButton.setFont(new Font("Arial", Font.BOLD, 14));
             Border loginBorder = BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(primaryColor, 1),
-                    BorderFactory.createEmptyBorder(12, 50, 12, 50)
+                    BorderFactory.createEmptyBorder(10, 40, 10, 40)
             );
             loginButton.setBorder(loginBorder);
             loginButton.setFocusPainted(false);
