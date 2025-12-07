@@ -26,7 +26,6 @@ public class EditProfilePage {
     }
 
     private JPanel createRow(JCheckBox checkBox, JComponent field) {
-
         JPanel row = new JPanel();
         row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
         row.setOpaque(false);
@@ -49,7 +48,6 @@ public class EditProfilePage {
     }
 
     private void createUI() {
-
         editProfilePanel = new JPanel();
         editProfilePanel.setLayout(new BorderLayout());
         editProfilePanel.setBackground(backgroundColor);
@@ -75,7 +73,7 @@ public class EditProfilePage {
         selectRow.setLayout(new BoxLayout(selectRow, BoxLayout.X_AXIS));
         selectRow.setOpaque(false);
 
-        selectRow.add(Box.createRigidArea(new Dimension(0, 0))); // sama rata dengan panel kiri
+        selectRow.add(Box.createRigidArea(new Dimension(0, 0)));
         selectRow.add(Box.createRigidArea(new Dimension(0, 0)));
 
         JSelect = new JLabel("Check fields you want to edit:");
@@ -130,7 +128,6 @@ public class EditProfilePage {
     }
 
     private void applyStyling() {
-
         Font labelFont = new Font("Arial", Font.PLAIN, 14);
 
         tFdisplay.setFont(labelFont);
@@ -159,8 +156,6 @@ public class EditProfilePage {
         cBdisplay.addActionListener(e -> {
             boolean selected = cBdisplay.isSelected();
             tFdisplay.setEnabled(selected);
-
-            // Gray jika disabled, White jika enabled
             tFdisplay.setBackground(selected ? Color.WHITE : new Color(240, 240, 240));
 
             if (selected) {
@@ -185,49 +180,164 @@ public class EditProfilePage {
         });
 
         bTsave.addActionListener(e -> {
+            // 1. Validasi input
+            if (!validateInput()) {
+                return;
+            }
 
-            if (cBdisplay.isSelected())
-                System.out.println("New display: " + tFdisplay.getText());
+            // 2. Simpan perubahan ke ProfilePage via MainControl
+            saveChangesToProfile();
 
-            if (cBemail.isSelected())
-                System.out.println("New email: " + tFemail.getText());
+            // 3. Reset form
+            resetForm();
 
-            if (cBpassword.isSelected())
-                System.out.println("New password: " + new String(tFpassword.getPassword()));
+            // 4. Kembali ke ProfilePage
+            MainControl.showProfilePage();
 
+            // 5. Tampilkan pesan sukses
             JOptionPane.showMessageDialog(null,
                     "Changes saved successfully!");
         });
 
         bTcancel.addActionListener(e -> {
+            int response = JOptionPane.showConfirmDialog(null,
+                    "Are you sure you want to cancel? Changes will be lost.",
+                    "Cancel Confirmation",
+                    JOptionPane.YES_NO_OPTION);
 
-            cBdisplay.setSelected(false);
-            cBemail.setSelected(false);
-            cBpassword.setSelected(false);
+            if (response == JOptionPane.YES_OPTION) {
+                // Reset form
+                resetForm();
 
-            tFdisplay.setEnabled(false);
-            tFemail.setEnabled(false);
-            tFpassword.setEnabled(false);
-
-            tFdisplay.setText("");
-            tFemail.setText("");
-            tFpassword.setText("");
-
-            JOptionPane.showMessageDialog(null,
-                    "Changes canceled.");
+                // Kembali ke ProfilePage
+                MainControl.showProfilePage();
+            }
         });
     }
 
-    public JPanel geteditProfilePanel() {
+    // ===== METHODS BARU UNTUK INTEGRASI =====
+
+    private boolean validateInput() {
+        // Validasi email format
+        if (cBemail.isSelected()) {
+            String email = tFemail.getText().trim();
+            if (!isValidEmail(email)) {
+                JOptionPane.showMessageDialog(null,
+                        "Please enter a valid email address (example@domain.com)",
+                        "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        }
+
+        // Validasi password length
+        if (cBpassword.isSelected()) {
+            char[] password = tFpassword.getPassword();
+            if (password.length < 6) {
+                JOptionPane.showMessageDialog(null,
+                        "Password must be at least 6 characters",
+                        "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        }
+
+        // Validasi display name tidak kosong jika dipilih
+        if (cBdisplay.isSelected()) {
+            String displayName = tFdisplay.getText().trim();
+            if (displayName.isEmpty()) {
+                JOptionPane.showMessageDialog(null,
+                        "Display name cannot be empty",
+                        "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isValidEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        // Simple email validation
+        return email.contains("@") && email.contains(".") && email.length() > 5;
+    }
+
+    private void saveChangesToProfile() {
+        String newDisplayName = null;
+        String newEmail = null;
+
+        // Ambil data dari form jika checkbox dicentang
+        if (cBdisplay.isSelected()) {
+            newDisplayName = tFdisplay.getText().trim();
+            if (!newDisplayName.isEmpty()) {
+                System.out.println("New display name: " + newDisplayName);
+            }
+        }
+
+        if (cBemail.isSelected()) {
+            newEmail = tFemail.getText().trim();
+            if (!newEmail.isEmpty()) {
+                System.out.println("New email: " + newEmail);
+            }
+        }
+
+        if (cBpassword.isSelected()) {
+            String newPassword = new String(tFpassword.getPassword());
+            if (!newPassword.isEmpty()) {
+                System.out.println("New password: " + newPassword);
+                // Dalam aplikasi nyata, password akan di-hash di sini
+            }
+        }
+
+        // Update data via MainControl
+        MainControl.updateUserProfile(newDisplayName, newEmail);
+    }
+
+    private void resetForm() {
+        cBdisplay.setSelected(false);
+        cBemail.setSelected(false);
+        cBpassword.setSelected(false);
+
+        tFdisplay.setEnabled(false);
+        tFemail.setEnabled(false);
+        tFpassword.setEnabled(false);
+
+        tFdisplay.setText("");
+        tFemail.setText("");
+        tFpassword.setText("");
+
+        tFdisplay.setBackground(new Color(240, 240, 240));
+        tFemail.setBackground(new Color(240, 240, 240));
+        tFpassword.setBackground(new Color(240, 240, 240));
+    }
+
+    // Method untuk pre-fill data dari ProfilePage
+    public void setCurrentData(String displayName, String email) {
+        if (displayName != null) {
+            tFdisplay.setText(displayName);
+        }
+        if (email != null) {
+            tFemail.setText(email);
+        }
+        // Password tidak di-prefill untuk keamanan
+    }
+
+    public JPanel getEditProfilePanel() {
         return editProfilePanel;
     }
 
+    // Test standalone
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Edit Profile");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 600);
-        frame.setContentPane(new EditProfilePage().geteditProfilePanel());
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Edit Profile");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(500, 600);
+            frame.setContentPane(new EditProfilePage().getEditProfilePanel());
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        });
     }
 }
