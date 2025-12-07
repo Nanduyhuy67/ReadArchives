@@ -37,6 +37,10 @@ public class ProfilePage {
     private Color backgroundColor = Color.WHITE;
     private Color panelBackground = new Color(245, 247, 250);
 
+    // Data storage
+    private String currentDisplayName = "ReadArchive";
+    private String currentEmail = "user@example.com";
+
     public ProfilePage() {
         createUI();
         applyStyling();
@@ -89,10 +93,6 @@ public class ProfilePage {
         mainContentPanel.add(Box.createVerticalGlue());
 
         profilePagePanel.add(mainContentPanel, BorderLayout.CENTER);
-
-        // FOOTER NAVIGATION
-        JPanel footerPanel = createFooterPanel();
-        profilePagePanel.add(footerPanel, BorderLayout.SOUTH);
     }
 
     private JPanel createNavigationPanel() {
@@ -159,22 +159,28 @@ public class ProfilePage {
         headerPanel.add(JMyProfile, BorderLayout.WEST);
         headerPanel.add(BEditProfile, BorderLayout.EAST);
 
-        // Profile Details
-        JPanel detailsPanel = new JPanel();
-        detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
+        // Profile Details - PAKAI GRID BAG LAYOUT untuk alignment presisi
+        JPanel detailsPanel = new JPanel(new GridBagLayout());
         detailsPanel.setOpaque(false);
-        detailsPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+        detailsPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 20, 20));
 
-        // Display Name
-        detailsPanel.add(createDetailRow("Display Name", JDisplayValue = new JLabel()));
-        detailsPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 0, 5, 0); // Spacing vertikal
+        gbc.weightx = 1.0;
 
-        // Email
-        detailsPanel.add(createDetailRow("Email", JEmailValue = new JLabel()));
-        detailsPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        // Row 1: Display Name
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        detailsPanel.add(createCompactRow("Display Name", JDisplayValue = new JLabel()), gbc);
 
-        // Password
-        detailsPanel.add(createDetailRow("Password", JPasswordValue = new JLabel("••••••••")));
+        // Row 2: Email
+        gbc.gridy = 1;
+        detailsPanel.add(createCompactRow("Email", JEmailValue = new JLabel()), gbc);
+
+        // Row 3: Password
+        gbc.gridy = 2;
+        detailsPanel.add(createCompactRow("Password", JPasswordValue = new JLabel("••••••••")), gbc);
 
         profilePanel.add(headerPanel, BorderLayout.NORTH);
         profilePanel.add(detailsPanel, BorderLayout.CENTER);
@@ -182,24 +188,23 @@ public class ProfilePage {
         return profilePanel;
     }
 
-    private JPanel createDetailRow(String label, JLabel value) {
-        JPanel row = new JPanel();
-        row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
+    // METODE untuk row yang lebih compact
+    private JPanel createCompactRow(String label, JLabel value) {
+        JPanel row = new JPanel(new BorderLayout());
         row.setOpaque(false);
 
         JLabel labelComponent = new JLabel(label + ":");
         labelComponent.setFont(new Font("Arial", Font.BOLD, 14));
         labelComponent.setForeground(new Color(85, 85, 85));
-        labelComponent.setPreferredSize(new Dimension(140, 30));
-        labelComponent.setMaximumSize(new Dimension(140, 30));
 
         value.setFont(new Font("Arial", Font.PLAIN, 14));
-        value.setPreferredSize(new Dimension(200, 30));
-        value.setMaximumSize(new Dimension(200, 30));
+        value.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 
-        row.add(labelComponent);
-        row.add(Box.createRigidArea(new Dimension(10, 0)));
-        row.add(value);
+        row.add(labelComponent, BorderLayout.WEST);
+        row.add(value, BorderLayout.CENTER);
+
+        // Atur tinggi konsisten
+        row.setPreferredSize(new Dimension(row.getPreferredSize().width, 30));
 
         return row;
     }
@@ -227,7 +232,7 @@ public class ProfilePage {
         gridPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
 
         // Total Items
-        gridPanel.add(createStatCard("Total Items/Collections", JTotalValue = new JLabel("0")));
+        gridPanel.add(createStatCard("Total Collections", JTotalValue = new JLabel("0")));
 
         // Reading
         gridPanel.add(createStatCard("Reading", JReadingValue = new JLabel("0")));
@@ -264,59 +269,6 @@ public class ProfilePage {
         card.add(value, BorderLayout.CENTER);
 
         return card;
-    }
-
-    private JPanel createFooterPanel() {
-        JPanel footerPanel = new JPanel(new GridLayout(1, 3, 0, 0));
-        footerPanel.setBackground(backgroundColor);
-        footerPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(220, 220, 220)),
-                BorderFactory.createEmptyBorder(15, 0, 15, 0)
-        ));
-
-        String[] footerItems = {"Profile", "Library", "Exit"};
-
-        for (String item : footerItems) {
-            JPanel itemPanel = new JPanel();
-            itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS));
-            itemPanel.setOpaque(false);
-            itemPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-            JLabel icon = new JLabel(getIconForItem(item), SwingConstants.CENTER);
-            icon.setFont(new Font("Segoe UI", Font.PLAIN, 20));
-
-            JLabel text = new JLabel(item, SwingConstants.CENTER);
-            text.setFont(new Font("Arial", Font.PLAIN, 14));
-            text.setForeground(primaryColor);
-
-            itemPanel.add(icon);
-            itemPanel.add(text);
-
-            // Add hover effect
-            itemPanel.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    itemPanel.setBackground(new Color(240, 247, 255));
-                    text.setForeground(secondaryColor);
-                }
-                public void mouseExited(java.awt.event.MouseEvent evt) {
-                    itemPanel.setBackground(null);
-                    text.setForeground(primaryColor);
-                }
-            });
-
-            footerPanel.add(itemPanel);
-        }
-
-        return footerPanel;
-    }
-
-    private String getIconForItem(String item) {
-        switch (item) {
-            case "Profile": return "👤";
-            case "Library": return "📚";
-            case "Exit": return "🚪";
-            default: return "●";
-        }
     }
 
     private Border createPanelBorder() {
@@ -359,14 +311,15 @@ public class ProfilePage {
             resetNavButtons();
             BMyProfile.setBackground(primaryColor);
             BMyProfile.setForeground(secondaryColor);
-            JOptionPane.showMessageDialog(null, "Switching to My Profile");
+            // Tetap di halaman profile, tidak perlu pindah
         });
 
         BLibrary.addActionListener(e -> {
             resetNavButtons();
             BLibrary.setBackground(primaryColor);
             BLibrary.setForeground(secondaryColor);
-            JOptionPane.showMessageDialog(null, "Switching to Library");
+            // Panggil MainControl untuk pindah ke Library
+            MainControl.showDashboard(); // atau MainControl.showLibraryPage() jika ada
         });
 
         BExit.addActionListener(e -> {
@@ -378,10 +331,9 @@ public class ProfilePage {
             }
         });
 
-        // Edit Profile Button
+        // Edit Profile Button - Navigasi ke EditProfilePage via MainControl
         BEditProfile.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Opening Edit Profile Page...");
-            // Here you would typically open the EditProfilePage
+            MainControl.showEditProfilePage();
         });
     }
 
@@ -394,21 +346,53 @@ public class ProfilePage {
     }
 
     private void loadDummyData() {
-        // Set dummy user data
-        setUserData("ReadArchive", "user@example.com");
+        // Set user data
+        setUserData(currentDisplayName, currentEmail);
 
         // Set dummy statistics
         setStatistics(127, 8, 89, 30);
     }
 
-    // Public methods to update data
+    // ===== PUBLIC METHODS UNTUK INTEGRASI DENGAN MAINCONTROL =====
+
+    // Method untuk update data dari EditProfilePage
     public void setUserData(String displayName, String email) {
+        if (displayName != null && !displayName.isEmpty()) {
+            currentDisplayName = displayName;
+            if (JDisplayValue != null) {
+                JDisplayValue.setText(displayName);
+            }
+        }
+        if (email != null && !email.isEmpty()) {
+            currentEmail = email;
+            if (JEmailValue != null) {
+                JEmailValue.setText(email);
+            }
+        }
+    }
+
+    // Setter individual untuk MainControl.updateUserProfile()
+    public void setDisplayName(String displayName) {
+        this.currentDisplayName = displayName;
         if (JDisplayValue != null) {
             JDisplayValue.setText(displayName);
         }
+    }
+
+    public void setEmail(String email) {
+        this.currentEmail = email;
         if (JEmailValue != null) {
             JEmailValue.setText(email);
         }
+    }
+
+    // Getter untuk data (digunakan EditProfilePage untuk pre-fill)
+    public String getDisplayName() {
+        return currentDisplayName;
+    }
+
+    public String getEmail() {
+        return currentEmail;
     }
 
     public void setStatistics(int total, int reading, int completed, int planToRead) {
@@ -422,6 +406,7 @@ public class ProfilePage {
         return profilePagePanel;
     }
 
+    // Test standalone (jika ingin test sendiri)
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Profile Page");

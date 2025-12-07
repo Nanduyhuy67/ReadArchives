@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class DashboardPage {
+public class Dashboard {
 
     public Container mainPanel;
 
@@ -12,7 +12,7 @@ public class DashboardPage {
     private Color primaryColor = new Color(51, 61, 87);      // Biru tua
     private Color secondaryColor = new Color(249, 206, 146); // Cream
 
-    public DashboardPage() {
+    public Dashboard() {
         JFrame frame = new JFrame("ReadArchive Dashboard");
         frame.setSize(900, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
