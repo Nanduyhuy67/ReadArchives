@@ -9,7 +9,6 @@ public class MainControl {
     private static Dashboard dashboard; // Nama class Dashboard (bukan DashboardPage)
     private static ProfilePage profilePage;
     private static EditProfilePage editProfilePage;
-    private static AddNewCollections addNewCollectionsPage;
 
     public static void main(String[] args) {
         frame = new JFrame("ReadArchives");
@@ -83,17 +82,6 @@ public class MainControl {
                 profilePage.setEmail(newEmail);
             }
         }
-    }
-
-    // ===== TAMBAHAN UNTUK ADD NEW COLLECTIONS =====
-
-    public static void showAddNewCollections() {
-        if (addNewCollectionsPage == null) {
-            addNewCollectionsPage = new AddNewCollections();
-        }
-        frame.setContentPane(addNewCollectionsPage.getAddCollectionPanel());
-        frame.revalidate();
-        frame.setTitle("ReadArchives - Add Collection");
     }
 
     // Getter untuk halaman (optional)
