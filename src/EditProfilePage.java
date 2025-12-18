@@ -1,6 +1,8 @@
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import model.User;
+import dao.UserDAO;
 
 public class EditProfilePage {
     private JPanel editProfilePanel;
@@ -23,7 +25,13 @@ public class EditProfilePage {
         createUI();
         applyStyling();
         setupEvents();
+
     }
+
+    //Untuk menyimpan data user saat ini
+    private String originalDisplayName;
+    private String originalEmail;
+    private String originalPassword;
 
     private JPanel createRow(JCheckBox checkBox, JComponent field) {
         JPanel row = new JPanel();
@@ -266,34 +274,40 @@ public class EditProfilePage {
     }
 
     private void saveChangesToProfile() {
-        String newDisplayName = null;
-        String newEmail = null;
+        // 1. Tentukan nilai baru (Gunakan nilai baru jika checkbox dicentang, jika tidak gunakan nilai asli)
+        String finalDisplayName = cBdisplay.isSelected() ? tFdisplay.getText().trim() : originalDisplayName;
+        String finalEmail = cBemail.isSelected() ? tFemail.getText().trim() : originalEmail;
+        String finalPassword = cBpassword.isSelected() ? new String(tFpassword.getPassword()) : originalPassword;
 
-        // Ambil data dari form jika checkbox dicentang
-        if (cBdisplay.isSelected()) {
-            newDisplayName = tFdisplay.getText().trim();
-            if (!newDisplayName.isEmpty()) {
-                System.out.println("New display name: " + newDisplayName);
-            }
+        // 2. Siapkan objek User dengan data baru
+        User updatedUser = new User();
+        updatedUser.setDisplayName(finalDisplayName);
+        updatedUser.setEmail(finalEmail);
+        updatedUser.setPassword(finalPassword);
+        // Username tidak diubah, boleh dikosongkan atau diset sembarang karena tidak masuk query update
+        updatedUser.setUsername(finalEmail.split("@")[0]);
+
+        // 3. Panggil DAO untuk update database
+        UserDAO dao = new UserDAO();
+        boolean success = dao.update(updatedUser, originalEmail); // Gunakan originalEmail untuk WHERE clause
+
+        if (success) {
+            // Jika database berhasil diupdate, baru update UI
+            MainControl.updateUserProfile(finalDisplayName, finalEmail);
+
+            // Update juga password di ProfilePage (tambahkan method ini di MainControl nanti)
+            MainControl.updateUserPassword(finalPassword);
+
+            // Tampilkan pesan sukses
+            JOptionPane.showMessageDialog(null, "Profile updated successfully!");
+
+            // Reset form dan navigasi kembali
+            resetForm();
+            MainControl.showProfilePage();
+        } else {
+            JOptionPane.showMessageDialog(null, "Failed to update profile. Email might be already taken.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        if (cBemail.isSelected()) {
-            newEmail = tFemail.getText().trim();
-            if (!newEmail.isEmpty()) {
-                System.out.println("New email: " + newEmail);
-            }
-        }
-
-        if (cBpassword.isSelected()) {
-            String newPassword = new String(tFpassword.getPassword());
-            if (!newPassword.isEmpty()) {
-                System.out.println("New password: " + newPassword);
-                // Dalam aplikasi nyata, password akan di-hash di sini
-            }
-        }
-
-        // TAMBAH INI: Update data ke MainControl
-        MainControl.updateUserProfile(newDisplayName, newEmail);
     }
 
     private void resetForm() {
@@ -315,14 +329,20 @@ public class EditProfilePage {
     }
 
     // Method untuk pre-fill data dari ProfilePage
-    public void setCurrentData(String displayName, String email) {
+    public void setCurrentData(String displayName, String email, String password) {
+        // Simpan data asli
+        this.originalDisplayName = displayName;
+        this.originalEmail = email;
+        this.originalPassword = password;
+
         if (displayName != null) {
             tFdisplay.setText(displayName);
         }
         if (email != null) {
             tFemail.setText(email);
         }
-        // Password tidak di-prefill untuk keamanan
+        // Password field biarkan kosong atau reset
+        tFpassword.setText("");
     }
 
     public JPanel getEditProfilePanel() {

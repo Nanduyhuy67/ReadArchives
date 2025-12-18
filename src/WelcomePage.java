@@ -1,6 +1,8 @@
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import model.User;
+import dao.UserDAO;
 
 public class WelcomePage {
     public JPanel mainPanel;
@@ -24,7 +26,6 @@ public class WelcomePage {
         applyStyling();
         setupEventListeners();
     }
-
     private void createUIManually() {
         // **PANEL UTAMA YANG MEMBENTANG PENUH**
         mainPanel = new JPanel(new BorderLayout());
@@ -245,19 +246,30 @@ public class WelcomePage {
 
         if (loginButton != null) {
             loginButton.addActionListener(e -> {
-                String username = loginField.getText().trim();
+                String inputLogin = loginField.getText().trim();
                 String password = new String(passwordField1.getPassword()).trim();
 
-                if (username.isEmpty() || password.isEmpty()) {
-                    JOptionPane.showMessageDialog(null,
-                            "Please fill in both fields!",
-                            "Input Error", JOptionPane.WARNING_MESSAGE);
+                if (inputLogin.isEmpty() || password.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Please fill in both fields!", "Input Error", JOptionPane.WARNING_MESSAGE);
                 } else {
-                    // Simulasi login sukses
-                    // Di sini nanti bisa tambah validasi username/password dari database
-                    MainControl.showDashboard();
-                    loginField.setText("");
-                    passwordField1.setText("");
+                    UserDAO userDAO = new UserDAO();
+                    User loggedInUser = userDAO.login(inputLogin, password);
+
+                    if (loggedInUser != null) {
+                        JOptionPane.showMessageDialog(null, "Login Successful! Welcome " + loggedInUser.getDisplayName());
+
+                        // Update data ProfilePage dengan data dari database (termasuk password!)
+
+                        MainControl.setCurrentUser(loggedInUser);
+
+                        // ============================
+
+                        MainControl.showDashboard();
+                        loginField.setText("");
+                        passwordField1.setText("");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Invalid Username/Email or Password!", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             });
         }

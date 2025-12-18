@@ -1,3 +1,5 @@
+import model.User;
+
 import javax.swing.*;
 
 public class MainControl {
@@ -18,6 +20,16 @@ public class MainControl {
         frame.setVisible(true);
     }
 
+    private static User currentUser;
+
+    public static void setCurrentUser(User user) {
+        currentUser = user;
+    }
+
+    public static User getCurrentUser() {
+        return currentUser;
+    }
+
     public static void showWelcome() {
         if (welcomePage == null) {
             welcomePage = new WelcomePage();
@@ -25,7 +37,8 @@ public class MainControl {
         frame.setContentPane(welcomePage.mainPanel);
         frame.revalidate();
         frame.setTitle("ReadArchives - Welcome");
-    }
+    };
+
 
     public static void showRegister() {
         if (registerPage == null) {
@@ -51,20 +64,33 @@ public class MainControl {
         if (profilePage == null) {
             profilePage = new ProfilePage();
         }
+        if (currentUser != null) {
+            profilePage.setUserData(
+                    currentUser.getDisplayName(),
+                    currentUser.getEmail(),
+                    currentUser.getPassword()
+            );
+        }
+
         frame.setContentPane(profilePage.getProfilePagePanel());
         frame.revalidate();
         frame.setTitle("ReadArchives - Profile");
+
+        
     }
 
     public static void showEditProfilePage() {
         if (editProfilePage == null) {
             editProfilePage = new EditProfilePage();
         }
-        // Pre-fill data dari ProfilePage
+
         if (profilePage != null) {
             String currentDisplayName = profilePage.getDisplayName();
             String currentEmail = profilePage.getEmail();
-            editProfilePage.setCurrentData(currentDisplayName, currentEmail);
+            String currentPassword = profilePage.getPassword(); // Ambil password saat ini
+
+            // Pastikan Anda memanggil setCurrentData dengan 3 parameter (termasuk password)
+            editProfilePage.setCurrentData(currentDisplayName, currentEmail, currentPassword);
         }
 
         frame.setContentPane(editProfilePage.getEditProfilePanel());
@@ -81,6 +107,13 @@ public class MainControl {
             if (newEmail != null) {
                 profilePage.setEmail(newEmail);
             }
+        }
+    }
+
+    public static void updateUserPassword(String newPassword) {
+        // Pastikan profilePage tidak null sebelum memanggil method di dalamnya
+        if (profilePage != null && newPassword != null) {
+            profilePage.setPassword(newPassword);
         }
     }
 

@@ -38,7 +38,7 @@ public class ProfilePage {
     // Data storage
     private String currentDisplayName = "ReadArchive";
     private String currentEmail = "user@example.com";
-    private String currentPassword = "password123";
+    private String currentPassword = "";
     private boolean passwordVisible = false;
 
     public ProfilePage() {
@@ -536,19 +536,11 @@ public class ProfilePage {
                 JEmailValue.setText(email);
             }
         }
-        if (password != null && !password.isEmpty()) {
-            currentPassword = password;
-            passwordVisible = false;
-            if (JPasswordValue != null) {
-                JPasswordValue.setText("••••••••");
-            }
-            if (BShowPassword != null) {
-                BShowPassword.setText("👁");
-                BShowPassword.setToolTipText("Show password");
-            }
-        }
+        this.currentPassword = password;
+
     }
 
+    // Setter individual untuk MainControl.updateUserProfile()
     public void setDisplayName(String displayName) {
         this.currentDisplayName = displayName;
         if (JDisplayValue != null) {

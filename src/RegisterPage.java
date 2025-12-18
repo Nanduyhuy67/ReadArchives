@@ -3,6 +3,8 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import model.User;
+import dao.UserDAO;
 
 public class RegisterPage {
     public JPanel mainPanel;
@@ -295,11 +297,28 @@ public class RegisterPage {
                             return;
                         }
 
-                        MainControl.showWelcome();
+                        // --- LOGIKA BARU: REGISTER KE DATABASE ---
+                        UserDAO userDAO = new UserDAO();
 
-                        // Reset form
-                        emailField.setText("");
-                        passwordField1.setText("");
+                        // Karena di form Register hanya ada Email, kita gunakan bagian depan email sebagai username sementara
+                        String username = email.split("@")[0];
+
+                        User newUser = new User(email, username, password);
+
+                        if (userDAO.register(newUser)) {
+                            JOptionPane.showMessageDialog(null, "Account created successfully! Please Login.");
+
+                            MainControl.showWelcome(); // Pindah ke halaman Login
+
+                            // Reset form
+                            emailField.setText("");
+                            passwordField1.setText("");
+                        } else {
+                            JOptionPane.showMessageDialog(null,
+                                    "Registration failed. Email might already be taken.",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        // ------------------------------------------
                     }
                 }
             });
